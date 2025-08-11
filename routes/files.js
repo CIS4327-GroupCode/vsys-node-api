@@ -8,7 +8,7 @@ const fileController = require('../controllers/fileController');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Store files in the 'uploads' folder
+    cb(null, 'public/'); // Store files in the 'public' folder
   },
   filename: (req, file, cb) => {
     cb(null, `${req.user.username}-${Date.now()}${path.extname(file.originalname)}`);

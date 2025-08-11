@@ -1,4 +1,4 @@
-const db = require('../db');
+const db = require('../database/db'); 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
@@ -15,10 +15,10 @@ const register = async (req, res) => {
 
     // SQL to insert a new user with default 'Volunteer' type (id=1)
     const sql = `
-      INSERT INTO "user" (username, first_name, last_name, password_hash, email, type_id)
-      VALUES ($1, $2, $3, $4, $5, 6) RETURNING *;
+      INSERT INTO "users" (username, first_name, last_name, password_hash, email, type_id)
+      VALUES ($1, $2, $3, $4, $5, 1) RETURNING *;
     `;
-    const values = [username, first_name, last_name, email, password_hash];
+    const values = [username, first_name, last_name, password_hash, email];
     const result = await db.query(sql, values);
 
     // Don't send the password hash back to the client
@@ -34,7 +34,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { username, password } = req.body;
   try {
-    const sql = `SELECT * FROM "user" WHERE username = $1;`;
+    const sql = `SELECT * FROM "users" WHERE username = $1;`;
     const userResult = await db.query(sql, [username]);
     const user = userResult.rows[0];
 
@@ -52,7 +52,7 @@ const login = async (req, res) => {
       user_type: user.type_id, // Use type_id for role-based authorization
     };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' });
 
     res.json({ token });
   } catch (error) {

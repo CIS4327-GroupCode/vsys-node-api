@@ -1,11 +1,11 @@
 {
   "name": "vsystem",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "dev": "nodemon app.js",
     "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx jest"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,7 @@
     "pg": "^8.16.3"
   },
   "devDependencies": {
+    "jest": "^30.0.5",
     "nodemon": "^3.1.10"
   }
 }

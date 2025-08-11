@@ -7,7 +7,7 @@ const pool = new Pool({
     database: process.env.DB_DATABASE,
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
-    ssl: false // Set to true if using SSL, e.g., on Heroku or other cloud providers
+    ssl: false // Set to true if using SSL on host
 });
 
 // Test the connection

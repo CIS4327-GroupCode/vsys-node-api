@@ -1,5 +1,5 @@
 // controllers/fileController.js
-const db = require('../db');
+const db = require('../database/db');
 const path = require('path');
 
 const uploadFile = async (req, res) => {
@@ -10,7 +10,7 @@ const uploadFile = async (req, res) => {
 
     const { file_type, description } = req.body;
     const username = req.user.username;
-    const url = `/uploads/${req.file.filename}`; // Path to the uploaded file
+    const url = `/public/${req.file.filename}`; // Path to the uploaded file
 
     const sql = `
       INSERT INTO "file" (file_type, url, username, description)

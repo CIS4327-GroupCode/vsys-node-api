@@ -1,5 +1,5 @@
 // controllers/opportunityController.js
-const db = require('../db');
+const db = require('../database/db');
 
 const getAllOpportunities = async (req, res) => {
   try {

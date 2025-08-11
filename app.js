@@ -3,28 +3,27 @@ const express = require('express');
 const path = require('path');
 const app = express();
 require('dotenv').config(); // Load environment variables
-const db = require('./database/db'); // Import database connection
-
-const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(express.urlencoded({ extended: true })); // For parsing form data
 app.use(express.json()); // For parsing JSON data
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files 
+app.use('/assets', express.static(path.join(__dirname, 'public'))); // Serve static files 
 
-// Basic Route
-const index = require('./routes/index');
-app.use('/', index);
-//MANAGE ROUTING DEPENDING ON AREAS, USERS, ROLES, ETC.
-app.get('/volunteers', async (req, res) => {
-    res.status(200).send('volunteers');
+//route imports
+const authRoutes = require('./routes/auth');
+const opportunityRoutes = require('./routes/opportunities');
+const fileRoutes = require('./routes/files');
+
+//route uses
+app.use('/api/auth', authRoutes);
+app.use('/api/opportunities', opportunityRoutes);
+app.use('/api/files', fileRoutes);
+
+app.get('/', (req, res) => {
+    res.send('API is running'); 
 });
 
-// Error Handling Middleware 
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).render('error', { message: 'Something went wrong!', error: err });
-});
+//set port
+const PORT = process.env.PORT || 3000;
 
 // Start the server
 app.listen(PORT, () => {
