@@ -1,0 +1,18 @@
+.info {
+  padding: 2rem;
+  text-align: center;
+  background-color: #ffffff;
+}
+
+.info h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #222;
+}
+
+.info p {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 600px;
+  margin: 0 auto;
+}
