@@ -4,9 +4,10 @@ const auth = require('../middleware/auth');
 const authorizeAdmin = require('../middleware/authorize');
 const opportunityController = require('../controllers/opportunityController');
 
-// Public routes: all opportunities | specific opportunity
+// Public routes: all opportunities | specific opportunity | opps by user
 router.get('/', opportunityController.getAllOpportunities);
 router.get('/:id', opportunityController.getOpportunityById);
+router.get('/user/:userId', opportunityController.getOpportunitiesByUser);
 
 // Admin-only routes: create | update | delete opportunity
 router.post('/', auth, authorizeAdmin, opportunityController.createOpportunity);

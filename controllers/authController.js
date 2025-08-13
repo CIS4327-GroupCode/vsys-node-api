@@ -42,6 +42,7 @@ const login = async (req, res) => {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
+    //match password
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
       return res.status(400).json({ error: 'Invalid credentials' });
@@ -52,7 +53,7 @@ const login = async (req, res) => {
       user_type: user.type_id, // Use type_id for role-based authorization
     };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '4h' });
 
     res.json({ token });
   } catch (error) {

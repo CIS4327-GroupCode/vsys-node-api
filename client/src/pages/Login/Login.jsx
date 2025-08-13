@@ -1,6 +1,7 @@
 import React from 'react';
 import AuthForm from '../../components/authForm/authForm';
 import styles from './Login.module.css';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const handleLogin = async (data) => {
@@ -8,6 +9,8 @@ const Login = () => {
     username: data.username,
     password: data.password,
   };
+
+  const navigate = useNavigate();
 
   try {
     const res = await fetch('http://localhost:'+process.env.PORT+'/api/auth/login', {
@@ -17,9 +20,16 @@ const Login = () => {
     });
     const result = await res.json();
     console.log('Login success:', result);
-    //redirect after successful login, handle auth state, etc.
+    // Save the token to localStorage
+    if (result.token) {
+    localStorage.setItem('token', result.token);
+    }
+    // Use navigate to pass the token to the dashboard
+    navigate('/dashboard', {state: result.token});
   } catch (err) {
     console.error('Login error:', err);
+    window.alert('Login failed. Please check your credentials.');
+    window.location.reload();
   }
 };
 

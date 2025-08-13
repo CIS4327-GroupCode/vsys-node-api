@@ -72,10 +72,22 @@ const deleteOpportunity = async (req, res) => {
   }
 };
 
+const getOpportunitiesByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const result = await db.query('SELECT * FROM opportunity WHERE published_by = $1 ORDER BY created_at DESC', [userId]);
+    res.json(result.rows);
+  }catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
 module.exports = {
   getAllOpportunities,
   getOpportunityById,
   createOpportunity,
   updateOpportunity,
   deleteOpportunity,
+  getOpportunitiesByUser
 };
