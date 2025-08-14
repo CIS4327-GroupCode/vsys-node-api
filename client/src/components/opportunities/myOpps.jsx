@@ -5,9 +5,12 @@ export function MyOpportunities({ userId }) {
     const [myOpps, setMyOpps] = useState([]);
 
     useEffect(() => {
-        fetch(`/api/users/${userId}/opportunities`)
+        fetch(`http://localhost:3000/api/opportunities/user/${userId}`)
             .then((res) => res.json())
-            .then((data) => setMyOpps(data))
+            .then((data) => {
+                //console.log('Fetched user opportunities:', data);
+                setMyOpps(data)
+            })
             .catch((err) => console.error('Failed to fetch user opportunities', err));
     }, [userId]);
 
@@ -20,7 +23,7 @@ export function MyOpportunities({ userId }) {
                 <ul>
                     {myOpps.map((opp) => (
                         <li key={opp.id}>
-                            <strong>{opp.title}</strong> — {opp.status}
+                            <strong>{opp.title}</strong> — {opp.center}
                         </li>
                     ))}
                 </ul>

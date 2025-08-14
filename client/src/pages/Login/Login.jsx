@@ -4,16 +4,16 @@ import styles from './Login.module.css';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const navigate = useNavigate();
   const handleLogin = async (data) => {
   const payload = {
     username: data.username,
     password: data.password,
   };
 
-  const navigate = useNavigate();
 
   try {
-    const res = await fetch('http://localhost:'+process.env.PORT+'/api/auth/login', {
+    const res = await fetch('http://localhost:3000/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),

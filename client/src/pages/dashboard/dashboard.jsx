@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { AvailableOpportunities } from '../../components/opportunities/availableOpp';
-import { MyOpportunities } from '../../components/opportunities/myOpp';
+import { MyOpportunities } from '../../components/opportunities/myOpps';
+import { OpportunitiesManager } from '../../components/opportunities/oppsManager';
 
 //API call to get user info based on JWT
 async function fetchUserInfo(token) {
-    const response = await fetch('/api/userinfo', {
+    const decoder = jwtDecode(token);
+    const response = await fetch(`http://localhost:3000/api/users/${decoder.username}`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -20,21 +22,27 @@ function AdminDashboard({ user }) {
     return (
         <div>
             <h2>Admin Dashboard</h2>
-            <p>Welcome, {user.name} (Admin)</p>
-            {/* Admin-specific content */}
+            <p>Welcome, {user} (Admin)</p>
+            <OpportunitiesManager/>
         </div>
     );
 }
 
 //case:user
 function UserDashboard({ user }) {
+    //console.log('Rendering UserDashboard with user:', user);
     return (
         <div>
             <h2>User Dashboard</h2>
-            <p>Welcome, {user.name}</p>
+            <p>Welcome, {user}</p>
 
             <AvailableOpportunities />
-            <MyOpportunities userId={user.id} />
+            <MyOpportunities userId={user} />
+            <button onClick={() => window.location.reload()}>Refresh Opportunities</button>
+            <button onClick={() => {
+                localStorage.removeItem("token")
+                window.location.href = '/login'
+                }}>log out</button>
         </div>
     );
 }
@@ -78,8 +86,11 @@ export default function Dashboard() {
     
         fetchUserInfo(token)
             .then((data) => {
-                setUser(data.user);
-                setRole(data.user.role);
+                //console.log('Fetched user data:', data.type_id);
+                setUser(data.username);
+                let rol = '';
+                data.type_id===1? rol='user': rol='admin';
+                setRole(rol);
                 setLoading(false);
             })
             .catch((err) => {

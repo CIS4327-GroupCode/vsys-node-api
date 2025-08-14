@@ -14,11 +14,13 @@ app.use(cors()); // Enable CORS for all routes
 const authRoutes = require('./routes/auth');
 const opportunityRoutes = require('./routes/opportunities');
 const fileRoutes = require('./routes/files');
+const usersRoutes = require('./routes/userInfo');
 
 //route uses
 app.use('/api/auth', authRoutes);
 app.use('/api/opportunities', opportunityRoutes);
 app.use('/api/files', fileRoutes);
+app.use('/api/users', usersRoutes);
 
 
 app.get('/', (req, res) => {

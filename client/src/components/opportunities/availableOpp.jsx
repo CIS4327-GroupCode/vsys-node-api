@@ -8,7 +8,10 @@ export function AvailableOpportunities() {
     useEffect(() => {
         fetch('/api/opportunities')
             .then((res) => res.json())
-            .then((data) => setOpportunities(data))
+            .then((data) => {
+                //console.log('Fetched opportunities:', data);    
+                setOpportunities(data)
+            })
             .catch((err) => console.error('Failed to fetch opportunities', err));
     }, []);
 
@@ -28,7 +31,7 @@ export function AvailableOpportunities() {
             <ul>
                 {filtered.map((opp) => (
                     <li key={opp.id}>
-                        <strong>{opp.title}</strong> — {opp.description}
+                        <strong>{opp.title}</strong> | {opp.center_id} — {opp.description}
                     </li>
                 ))}
             </ul>

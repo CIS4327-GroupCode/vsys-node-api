@@ -75,8 +75,11 @@ const deleteOpportunity = async (req, res) => {
 const getOpportunitiesByUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    const result = await db.query('SELECT * FROM opportunity WHERE published_by = $1 ORDER BY created_at DESC', [userId]);
-    res.json(result.rows);
+    const result = await db.query(`SELECT opp.opportunity_id as id, opp.title, opp.description, opp.center_id 
+                                    FROM opportunity as opp inner join volunteer_application as va 
+                                    on opp.opportunity_id = va.opportunity_id 
+                                    where va.username = $1 ORDER BY va.created_at DESC`, [userId]);
+    res.status(200).json(result.rows);
   }catch (error) {
     res.status(500).json({ error: 'Server error' });
   }
