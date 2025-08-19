@@ -1,30 +1,26 @@
 // OpportunitiesManager.jsx
 import React, { useState, useEffect, useCallback } from 'react';
+import {
+    Container, Button, Form, Modal, Spinner, Alert,
+    ListGroup, Stack, Row, Col, ButtonGroup
+} from 'react-bootstrap';
 
-// A separate component for the Create/Edit form for better organization.
-function OpportunityForm({ opportunity, onSave, onCancel }) {
-    const [formData, setFormData] = useState({
-        title: '',
-        description: '',
-        role: '',
-        center_id: '',
-        valid_until: '',
-    });
+// The form is now inside a React Bootstrap Modal
+function OpportunityModal({ show, opportunity, onSave, onCancel }) {
+    const [formData, setFormData] = useState({});
 
     useEffect(() => {
-        if (opportunity) {
-            // Format valid_until for the datetime-local input
-            const formattedDate = opportunity.valid_until 
-                ? new Date(opportunity.valid_until).toISOString().slice(0, 16) 
-                : '';
-            setFormData({
-                title: opportunity.title || '',
-                description: opportunity.description || '',
-                role: opportunity.role || '',
-                center_id: opportunity.center_id || '',
-                valid_until: formattedDate,
-            });
-        }
+        // Pre-fill form data when the opportunity to edit is passed in
+        const formattedDate = opportunity?.valid_until
+            ? new Date(opportunity.valid_until).toISOString().slice(0, 16)
+            : '';
+        setFormData({
+            title: opportunity?.title || '',
+            description: opportunity?.description || '',
+            role: opportunity?.role || '',
+            center_id: opportunity?.center_id || '',
+            valid_until: formattedDate,
+        });
     }, [opportunity]);
 
     const handleChange = (e) => {
@@ -38,33 +34,58 @@ function OpportunityForm({ opportunity, onSave, onCancel }) {
     };
 
     return (
-        <div className="modal-backdrop">
-            <div className="modal">
-                <h3>{opportunity?.opportunity_id ? 'Edit Opportunity' : 'Create New Opportunity'}</h3>
-                <form onSubmit={handleSubmit}>
-                    <input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Opportunity Title" required />
-                    <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" required />
-                    <input type="text" name="role" value={formData.role} onChange={handleChange} placeholder="Role" required />
-                    {/* In a real app, this would be a dropdown populated from the /api/centers endpoint */}
-                    <input type="number" name="center_id" value={formData.center_id} onChange={handleChange} placeholder="Center ID" required />
-                    <input type="datetime-local" name="valid_until" value={formData.valid_until} onChange={handleChange} required />
-                    <div className="form-actions">
-                        <button type="submit">Save</button>
-                        <button type="button" onClick={onCancel}>Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <Modal show={show} onHide={onCancel} centered>
+            <Modal.Header closeButton>
+                <Modal.Title>
+                    {opportunity?.opportunity_id ? 'Edit Opportunity' : 'Create New Opportunity'}
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form onSubmit={handleSubmit}>
+                    <Form.Group className="mb-3" controlId="formTitle">
+                        <Form.Label>Opportunity Title</Form.Label>
+                        <Form.Control type="text" name="title" value={formData.title} onChange={handleChange} placeholder="e.g., Community Fair Staff" required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formDescription">
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control as="textarea" rows={3} name="description" value={formData.description} onChange={handleChange} required />
+                    </Form.Group>
+                    <Row>
+                        <Col>
+                            <Form.Group className="mb-3" controlId="formRole">
+                                <Form.Label>Role</Form.Label>
+                                <Form.Control type="text" name="role" value={formData.role} onChange={handleChange} placeholder="e.g., Event Helper" required />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            {/* In a real app, this would be a Form.Select populated from an API */}
+                            <Form.Group className="mb-3" controlId="formCenterId">
+                                <Form.Label>Center ID</Form.Label>
+                                <Form.Control type="number" name="center_id" value={formData.center_id} onChange={handleChange} required />
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    <Form.Group className="mb-3" controlId="formValidUntil">
+                        <Form.Label>Valid Until</Form.Label>
+                        <Form.Control type="datetime-local" name="valid_until" value={formData.valid_until} onChange={handleChange} required />
+                    </Form.Group>
+                    {/* The buttons are moved to Modal.Footer for standard placement */}
+                </Form>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={onCancel}>Cancel</Button>
+                <Button variant="primary" onClick={handleSubmit}>Submit</Button>
+            </Modal.Footer>
+        </Modal>
     );
 }
-
 
 export function OpportunitiesManager() {
     const [opportunities, setOpportunities] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
     // State for the modal form
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentOpportunity, setCurrentOpportunity] = useState(null);
@@ -73,7 +94,7 @@ export function OpportunitiesManager() {
         setIsLoading(true);
         fetch('/api/opportunities')
             .then(res => {
-                if (!res.ok) throw new Error('Failed to fetch');
+                if (!res.ok) throw new Error('Network response was not ok.');
                 return res.json();
             })
             .then(data => {
@@ -87,25 +108,26 @@ export function OpportunitiesManager() {
     useEffect(() => {
         fetchOpportunities();
     }, [fetchOpportunities]);
-    
-    // --- CRUD Handlers ---
 
+    // --- CRUD Handlers (with improved response handling) ---
     const handleSave = (opportunityData) => {
+        console.log('Saving opportunity:', opportunityData);
         const isUpdating = !!opportunityData.opportunity_id;
         const method = isUpdating ? 'PUT' : 'POST';
         const url = isUpdating ? `/api/opportunities/${opportunityData.opportunity_id}` : '/api/opportunities';
 
-        fetch(url, {
+        fetch(`http://localhost:3000${url}`, {
             method: method,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', authorization: `Bearer ${localStorage.getItem('token')}` },
             body: JSON.stringify(opportunityData),
         })
         .then(res => {
             if (!res.ok) throw new Error(isUpdating ? 'Update failed' : 'Create failed');
+            // Only parse JSON if there's a body. POST/PUT should return the updated/created object.
             return res.json();
         })
         .then(() => {
-            fetchOpportunities(); // Re-fetch the list to show the changes
+            fetchOpportunities();
             setIsModalOpen(false);
             setCurrentOpportunity(null);
         })
@@ -114,19 +136,20 @@ export function OpportunitiesManager() {
 
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this opportunity?')) {
-            fetch(`/api/opportunities/${id}`, { method: 'DELETE' })
+            fetch(`/api/opportunities/${id}`, { method: 'DELETE', 
+                headers: { 'Content-Type': 'application/json', authorization: `Bearer ${localStorage.getItem('token')}` } })
             .then(res => {
                 if (!res.ok) throw new Error('Delete failed');
-                fetchOpportunities(); // Re-fetch to update the list
+                // A successful DELETE often returns a 204 No Content, which has no body.
+                fetchOpportunities();
             })
             .catch(err => setError(err.message));
         }
     };
-    
+
     // --- Modal Control ---
-    
     const openCreateModal = () => {
-        setCurrentOpportunity({}); // Empty object for a new opportunity
+        setCurrentOpportunity(null); // Use null for create mode
         setIsModalOpen(true);
     };
 
@@ -135,51 +158,52 @@ export function OpportunitiesManager() {
         setIsModalOpen(true);
     };
 
-    const filtered = opportunities.filter((opp) =>
+    const filteredOpportunities = opportunities.filter((opp) =>
         opp.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
-        <section className="opportunity-manager">
-            <h3>Manage Opportunities</h3>
-            <div className="toolbar">
-                <input
+        <Container className="my-4">
+            <h3 className="mb-3 text-center">Manage Opportunities</h3>
+            <Stack direction="horizontal" gap={3} className="mb-3">
+                <Form.Control
                     type="text"
                     placeholder="Search opportunities..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <button onClick={openCreateModal}>+ Create New</button>
-            </div>
-            
-            {isLoading && <p>Loading opportunities...</p>}
-            {error && <p className="error-message">Error: {error}</p>}
+                <Button variant="primary" onClick={openCreateModal} className="text-nowrap">+ Create New</Button>
+            </Stack>
+
+            {isLoading && <div className="text-center"><Spinner animation="border" /> <span className="ms-2">Loading...</span></div>}
+            {error && <Alert variant="danger">Error: {error}</Alert>}
 
             {!isLoading && !error && (
-                <ul className="opportunity-list">
-                    {filtered.map((opp) => (
-                        <li key={opp.opportunity_id}>
-                            <div className="opportunity-info">
-                                <strong>{opp.title}</strong> ({opp.role})
-                                <small>At: {opp.center_name} | Expires: {new Date(opp.valid_until).toLocaleDateString()}</small>
-                                <p>{opp.description}</p>
+                <ListGroup>
+                    {filteredOpportunities.map((opp) => (
+                        <ListGroup.Item key={opp.opportunity_id} className="d-flex justify-content-between align-items-start">
+                            <div className="ms-2 me-auto">
+                                <div className="fw-bold">{opp.title} ({opp.role})</div>
+                                <div className="text-muted mb-2">
+                                    <small>At: {opp.center_name} | Expires: {new Date(opp.valid_until).toLocaleDateString()}</small>
+                                </div>
+                                {opp.description}
                             </div>
-                            <div className="opportunity-actions">
-                                <button onClick={() => openUpdateModal(opp)}>Edit</button>
-                                <button onClick={() => handleDelete(opp.opportunity_id)} className="delete-btn">Delete</button>
-                            </div>
-                        </li>
+                            <ButtonGroup>
+                                <Button variant="outline-secondary" size="sm" onClick={() => openUpdateModal(opp)}>Edit</Button>
+                                <Button variant="outline-danger" size="sm" onClick={() => handleDelete(opp.opportunity_id)}>Delete</Button>
+                            </ButtonGroup>
+                        </ListGroup.Item>
                     ))}
-                </ul>
+                </ListGroup>
             )}
 
-            {isModalOpen && (
-                <OpportunityForm 
-                    opportunity={currentOpportunity}
-                    onSave={handleSave}
-                    onCancel={() => setIsModalOpen(false)}
-                />
-            )}
-        </section>
+            <OpportunityModal
+                show={isModalOpen}
+                opportunity={currentOpportunity}
+                onSave={handleSave}
+                onCancel={() => setIsModalOpen(false)}
+            />
+        </Container>
     );
 }

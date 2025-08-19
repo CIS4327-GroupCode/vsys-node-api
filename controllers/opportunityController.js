@@ -25,22 +25,24 @@ const getOpportunityById = async (req, res) => {
 
 const createOpportunity = async (req, res) => {
   try {
-    const { title, valid_until, published, role, description, center_id, status_id } = req.body;
+    const { title, valid_until, role, description, center_id} = req.body;    
     const published_by = req.user.username; // Get username from JWT
     const sql = `
-      INSERT INTO opportunity (title, valid_until, published, role, description, center_id, status_id, published_by)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;
+    INSERT INTO opportunity (title, valid_until, published, role, description, center_id, status_id, published_by)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;
     `;
-    const values = [title, valid_until, published, role, description, center_id, status_id, published_by];
+    const values = [title, valid_until, true, role, description, center_id, 1, published_by];
     const result = await db.query(sql, values);
     res.status(201).json(result.rows[0]);
   } catch (error) {
+    console.error('Error creating opportunity:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
 
 const updateOpportunity = async (req, res) => {
   try {
+    console.log('updating opportunity:', req.body);
     const { id } = req.params;
     const { title, valid_until, published, role, description, center_id, status_id } = req.body;
     const sql = `
@@ -55,6 +57,7 @@ const updateOpportunity = async (req, res) => {
     }
     res.json(result.rows[0]);
   } catch (error) {
+    console.error('Error creating opportunity:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
@@ -68,6 +71,7 @@ const deleteOpportunity = async (req, res) => {
     }
     res.json({ message: 'Opportunity deleted successfully' });
   } catch (error) {
+    console.error('Error deleting opportunity:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };

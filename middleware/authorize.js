@@ -1,5 +1,5 @@
 // middleware/authorize.js
-// Assuming user_type ID for 'Administrator' is 2 based on your DDL comments
+// user_type ID for 'Administrator' is 2 
 const authorizeAdmin = (req, res, next) => {
   // The 'user_type' is decoded from the JWT and attached by the auth middleware
   if (req.user.user_type !== 2) {

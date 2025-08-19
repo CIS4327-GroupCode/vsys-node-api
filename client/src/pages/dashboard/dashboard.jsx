@@ -4,6 +4,8 @@ import { jwtDecode } from 'jwt-decode';
 import { AvailableOpportunities } from '../../components/opportunities/availableOpp';
 import { MyOpportunities } from '../../components/opportunities/myOpps';
 import { OpportunitiesManager } from '../../components/opportunities/oppsManager';
+import CentersManager from '../../components/centers/centerManagement';
+import {Container, Tabs, Tab} from 'react-bootstrap'
 
 //API call to get user info based on JWT
 async function fetchUserInfo(token) {
@@ -20,11 +22,19 @@ async function fetchUserInfo(token) {
 //case:admin
 function AdminDashboard({ user }) {
     return (
-        <div>
-            <h2>Admin Dashboard</h2>
-            <p>Welcome, {user} (Admin)</p>
-            <OpportunitiesManager/>
-        </div>
+        <Container className="my-4">
+            <h2 className="mb-0">Admin Dashboard</h2>
+            <p className="text-muted">Welcome, {user}!</p>
+            
+            <Tabs defaultActiveKey="opportunities" id="admin-dashboard-tabs" className="mb-3" fill>
+                <Tab eventKey="opportunities" title="Manage Opportunities">
+                    <OpportunitiesManager />
+                </Tab>
+                <Tab eventKey="centers" title="Manage Centers">
+                    <CentersManager />
+                </Tab>
+            </Tabs>
+        </Container>
     );
 }
 
