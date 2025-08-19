@@ -3,12 +3,12 @@ import styles from './authForm.module.css';
 
 const AuthForm = ({ type, onSubmit }) => {
   const [formData, setFormData] = useState({
-  name: '',
-  username: '',
-  email: '',
-  password: '',
-});
-
+    firstName: '',
+    lastName: '',
+    username: '',
+    email: '',
+    password: '',
+  });
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -25,34 +25,45 @@ const AuthForm = ({ type, onSubmit }) => {
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       {type === 'register' && (
+        <>
+          <input
+            type="text"
+            name="firstName"
+            placeholder="First Name"
+            value={formData.firstName}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="text"
+            name="lastName"
+            placeholder="Last Name"
+            value={formData.lastName}
+            onChange={handleChange}
+            required
+          />
+        </>
+      )}
+
+      <input
+        type="text"
+        name="username"
+        placeholder="Username"
+        value={formData.username}
+        onChange={handleChange}
+        required
+      />
+
+      {type === 'register' && (
         <input
-          type="text"
-          name="name"
-          placeholder="Full Name"
-          value={formData.name}
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formData.email}
           onChange={handleChange}
           required
         />
       )}
-      {type === 'login' ? (
-        <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            value={formData.username}
-            onChange={handleChange}
-            required
-        />
-        ) : (
-        <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-        />
-        )}
 
       <input
         type="password"
@@ -62,6 +73,7 @@ const AuthForm = ({ type, onSubmit }) => {
         onChange={handleChange}
         required
       />
+
       <button type="submit">{type === 'login' ? 'Login' : 'Register'}</button>
     </form>
   );

@@ -4,15 +4,15 @@ import styles from './Register.module.css';
 
 const Register = () => {
   const handleRegister = async (data) => {
+    console.log('Registering user:', data);
     try {
-      const res = await fetch('http://localhost:5000/api/register', {
+      const res = await fetch('http://localhost:3000/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
       const result = await res.json();
       console.log('Register success:', result);
-      // Handle auth state, redirect, etc.
     } catch (err) {
       console.error('Register error:', err);
     }

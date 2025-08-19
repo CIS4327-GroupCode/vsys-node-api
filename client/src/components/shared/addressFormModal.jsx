@@ -9,7 +9,7 @@ export default function AddressFormModal({ show, onCancel, onSave }) {
 
     const handleSave = () => {
         setIsSaving(true);
-        fetch('http://localhost:3000/api/address', {
+        fetch('http://localhost:3000/api/address', {//create address
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData),

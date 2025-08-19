@@ -4,11 +4,13 @@ const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 
 const register = async (req, res) => {
-  const errors = validationResult(req);
+  /*const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.error('Validation errors:', errors.array());
     return res.status(400).json({ errors: errors.array() });
-  }
-  const { username, first_name, last_name, email, password } = req.body;
+  }*/
+  console.log('Registering user:', req.body);
+  const { username, firstName, lastName, email, password } = req.body;
   try {
     const salt = await bcrypt.genSalt(10);
     const password_hash = await bcrypt.hash(password, salt);
@@ -18,7 +20,7 @@ const register = async (req, res) => {
       INSERT INTO "users" (username, first_name, last_name, password_hash, email, type_id)
       VALUES ($1, $2, $3, $4, $5, 1) RETURNING *;
     `;
-    const values = [username, first_name, last_name, password_hash, email];
+    const values = [username, firstName, lastName, password_hash, email];
     const result = await db.query(sql, values);
 
     // Don't send the password hash back to the client

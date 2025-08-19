@@ -26,6 +26,7 @@ export default function CenterModal({ show, center, onCancel, onSave }) {
             alert('Please select or create an address for the center.');
             return;
         }
+        console.log(`there is an id for address ${selectedAddress.address_id}`);
         onSave({ ...center, ...formData, address_id: selectedAddress.address_id });
     };
 

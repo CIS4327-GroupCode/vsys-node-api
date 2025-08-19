@@ -25,9 +25,9 @@ export default function CentersManager() {
         const isUpdating = !!centerData.center_id;
         const method = isUpdating ? 'PUT' : 'POST';
         const url = isUpdating ? `/api/centers/${centerData.center_id}` : '/api/centers';
-
+        
         fetch(`http://localhost:3000${url}`, {
-            method,
+            method: method,
             authorization: `Bearer ${localStorage.getItem('token')}`,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(centerData),
