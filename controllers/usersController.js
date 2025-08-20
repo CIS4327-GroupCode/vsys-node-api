@@ -2,7 +2,7 @@ const db = require('../database/db');
 
 const getAllUsers = async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM users ORDER BY created_at DESC');
+    const result = await db.query('SELECT * from users ORDER BY created_at DESC');
     res.status(200).json(result.rows);
   } catch (error) {
     res.status(500).json({ error: 'Server error' });

@@ -5,7 +5,8 @@ import { AvailableOpportunities } from '../../components/opportunities/available
 import { MyOpportunities } from '../../components/opportunities/myOpps';
 import { OpportunitiesManager } from '../../components/opportunities/oppsManager';
 import CentersManager from '../../components/centers/centerManagement';
-import {Container, Tabs, Tab} from 'react-bootstrap'
+import { Container, Tabs, Tab, Button, Stack } from 'react-bootstrap';
+import VolunteersManager from '../../components/volunteers/VolunteersManager';
 
 //API call to get user info based on JWT
 async function fetchUserInfo(token) {
@@ -18,13 +19,22 @@ async function fetchUserInfo(token) {
     if (!response.ok) throw new Error('Failed to fetch user info');
     return response.json();
 }
- 
+
 //case:admin
 function AdminDashboard({ user }) {
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        window.location.href = '/login';
+    };
     return (
         <Container className="my-4">
             <h2 className="mb-0">Admin Dashboard</h2>
-            <p className="text-muted">Welcome, {user}!</p>
+            <Container className="mb-3 row">
+                <p className="text-muted col">Welcome, {user}!</p>
+                <Button variant="outline-danger" onClick={handleLogout} className="col">
+                        Log Out
+                </Button>
+            </Container>
             
             <Tabs defaultActiveKey="opportunities" id="admin-dashboard-tabs" className="mb-3" fill>
                 <Tab eventKey="opportunities" title="Manage Opportunities">
@@ -33,6 +43,10 @@ function AdminDashboard({ user }) {
                 <Tab eventKey="centers" title="Manage Centers">
                     <CentersManager />
                 </Tab>
+                <Tab eventKey="users" title="Manage Volunteers">
+                    <h3>Manage Volunteers</h3>
+                    <VolunteersManager />
+                </Tab>
             </Tabs>
         </Container>
     );
@@ -40,20 +54,39 @@ function AdminDashboard({ user }) {
 
 //case:user
 function UserDashboard({ user }) {
-    //console.log('Rendering UserDashboard with user:', user);
-    return (
-        <div>
-            <h2>User Dashboard</h2>
-            <p>Welcome, {user}</p>
+    // Handler for logging out, for cleaner code
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        window.location.href = '/login';
+    };
 
-            <AvailableOpportunities />
-            <MyOpportunities userId={user} />
-            <button onClick={() => window.location.reload()}>Refresh Opportunities</button>
-            <button onClick={() => {
-                localStorage.removeItem("token")
-                window.location.href = '/login'
-                }}>log out</button>
-        </div>
+    return (
+        <Container className="my-4">
+            <h2 className="mb-0">Volunteer Dashboard</h2>
+            <Container className="mb-3 row">
+                <p className="text-muted col">Welcome, {user}!</p>
+                <Button variant="outline-danger" onClick={handleLogout} className="col">
+                        Log Out
+                </Button>
+            </Container>
+            
+            <Tabs defaultActiveKey="available" id="user-dashboard-tabs" className="mb-3" fill>
+                <Tab eventKey="available" title="Available Opportunities">
+                    {/* Component to browse all open opportunities */}
+                    <AvailableOpportunities />
+                </Tab>
+                <Tab eventKey="my-applications" title="My Applications">
+                    {/* Component to view opportunities the user has applied for */}
+                    <MyOpportunities userId={user} />
+                </Tab>
+            </Tabs>
+            
+            <Stack direction="horizontal" gap={2}>
+                <Button variant="outline-secondary" onClick={() => window.location.reload()}>
+                    🔄 Refresh
+                </Button>
+            </Stack>
+        </Container>
     );
 }
 

@@ -13,6 +13,11 @@ const Register = () => {
       });
       const result = await res.json();
       console.log('Register success:', result);
+      // Handle successful registration, e.g., redirect to login or show a success message
+      if (res.ok) {
+        alert('Registration successful! Please log in.');
+        window.location.href = '/login'; // Redirect to login page
+      }
     } catch (err) {
       console.error('Register error:', err);
     }
